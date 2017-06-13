@@ -10,6 +10,9 @@ from MAVProxy.modules.lib import mp_module
 class DynamicBaseModule(mp_module.MPModule):
     def __init__(self, mpstate):
         super(DynamicBaseModule, self).__init__(mpstate, "DynamicBase", "DynamicBase injection support")
+        self.base_lat = None
+        self.base_lon = None
+        self.base_alt = None
         self.connect_to_base("10.42.3.43", 9001)
 
     def connect_to_base(self, ip, port):
@@ -20,6 +23,7 @@ class DynamicBaseModule(mp_module.MPModule):
             print "ERROR: could not connect to base"
         else:
             print "Connected to base to track its location"
+            # self.get_base_location()
 
     def idle_task(self):
         '''called in idle time'''
@@ -31,27 +35,27 @@ class DynamicBaseModule(mp_module.MPModule):
             chunk = self.base_conn.recv(4096)
             lines = chunk.splitlines()
             for l in lines:
-                # print l
+                print l
                 columns = l.split() # split on whitespace
                 if not len(columns) == 15:
                     break # discard incomplete lines
-                lat = columns[2]
-                lon = columns[3]
-                alt = columns[5]
-                print "base location lat: %s, long: %s, alt: %s" % (lat, lon, alt)
-                # TODO: dampen the input signal and send an update to the plane
-
+                lat = float(columns[2])
+                lon = float(columns[3])
+                alt = float(columns[4])
         except:
             print "No base location"
+        else:
+            print "forwarding base location lat: %s, long: %s, alt: %s" % (lat, lon, alt)
+            self.cmd_set_home(lat+1, lon, alt)
 
-    def cmd_set_home(self, lat, lon):
-        '''called when user selects "Set Home" on map'''
-        alt = 0.1 # self.ElevationMap.GetElevation(lat, lon)
-        print("Setting home to: ", lat, lon, alt)
+    def cmd_set_home(self, lat, lon, alt):
+        '''called when user selects "Set Home" on map
+        see http://ardupilot.org/copter/docs/common-mavlink-mission-command-messages-mav_cmd.html#mav-cmd-do-set-home'''
+        print "Setting home to: ", lat, lon, alt
         self.master.mav.command_long_send(
             self.settings.target_system, self.settings.target_component,
             mavutil.mavlink.MAV_CMD_DO_SET_HOME,
-            1, # set position
+            2, # set position
             0, # param1
             0, # param2
             0, # param3
