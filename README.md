@@ -4,7 +4,7 @@ This is a fork of the MAVLink ground station written in python.
 
 it adds these modules:
  - DynamicBase: tracking and forwarding the location of a moving base station
- ...
+ - (more to come)
 
 License
 -------
