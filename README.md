@@ -1,11 +1,10 @@
-MAVProxy
+MAVProxy fork
 
-This is a MAVLink ground station written in python. 
+This is a fork of the MAVLink ground station written in python. 
 
-Please see http://ardupilot.github.io/MAVProxy/ for more information
-
-This ground station was developed as part of the CanberraUAV OBC team
-entry
+it adds these modules:
+ - DynamicBase: tracking and forwarding the location of a moving base station
+ ...
 
 License
 -------
