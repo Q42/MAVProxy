@@ -35,7 +35,7 @@ class DynamicBaseModule(mp_module.MPModule):
             chunk = self.base_conn.recv(4096)
             lines = chunk.splitlines()
             for l in lines:
-                print l
+                # print l
                 columns = l.split() # split on whitespace
                 if not len(columns) == 15:
                     break # discard incomplete lines
@@ -43,10 +43,9 @@ class DynamicBaseModule(mp_module.MPModule):
                 lon = float(columns[3])
                 alt = float(columns[4])
         except:
-            print "No base location"
+            print "No base location (yet)"
         else:
-            print "forwarding base location lat: %s, long: %s, alt: %s" % (lat, lon, alt)
-            self.cmd_set_home(lat+1, lon, alt)
+            self.cmd_set_home(lat, lon, alt)
 
     def cmd_set_home(self, lat, lon, alt):
         '''called when user selects "Set Home" on map
